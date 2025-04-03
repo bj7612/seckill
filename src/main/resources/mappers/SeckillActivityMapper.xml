@@ -161,4 +161,11 @@
       lock_stock = #{lockStock,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="querySeckillActivitysByStatus" parameterType="java.lang.Integer"
+          resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from seckill_activity
+    where activity_status = #{id,jdbcType=SMALLINT}
+  </select>
 </mapper>

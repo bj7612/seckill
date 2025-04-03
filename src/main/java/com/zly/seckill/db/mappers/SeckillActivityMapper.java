@@ -1,11 +1,15 @@
 package com.zly.seckill.db.mappers;
 
 import com.zly.seckill.db.po.SeckillActivity;
+import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
+@Mapper
 public interface SeckillActivityMapper {
     int deleteByPrimaryKey(Long id);
 
-    int insert(SeckillActivity record);
+    void insert(SeckillActivity record);
 
     int insertSelective(SeckillActivity record);
 
@@ -14,4 +18,6 @@ public interface SeckillActivityMapper {
     int updateByPrimaryKeySelective(SeckillActivity record);
 
     int updateByPrimaryKey(SeckillActivity record);
+
+    List<SeckillActivity> querySeckillActivitysByStatus(int activityStatus);
 }
