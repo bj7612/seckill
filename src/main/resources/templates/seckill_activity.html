@@ -148,6 +148,7 @@
 		<!--秒杀活动列表列表-->
 		<div class="goods-list" id="app">
 			<ul class="seckill" id="seckill">
+				<!-- iterate every seckill activity -->
 				<tr th:each="seckillActivity : ${seckillActivities}">
 					<li class="seckill-item" >
 						<div class="pic">
@@ -170,6 +171,7 @@
 							<div>剩余
 								<b class='owned'>999</b>件</div>
 						</div>
+						<!-- go to the activity detail page, pass the id to the controller "public String itemPage()" that will handle this request-->
 						<a class='sui-btn btn-block btn-buy'  th:href="@{'/item/'+${seckillActivity.id}}" target='_blank'>立即抢购</a>
 					</li>
 				</tr>

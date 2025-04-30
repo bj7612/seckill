@@ -33,7 +33,7 @@
                             <li class="f-item"><span>企业采购</span></li>
                             <li class="f-item"><span><a href="cooperation.html" target="_blank">合作招商</a></span></li>
                             <li class="f-item"><span><a href="shoplogin.html" target="_blank">商家后台</a></span></li>
-                            <li class="f-item"><span>网站导航</li>
+                            <li class="f-item"><span>网站导航</span></li>
                         </ul>
                     </div>
 
@@ -83,7 +83,11 @@
                 <div class="step-cont">
                     <ul class="send-detail">
                         <li>
+                            <!-- A container <div> with a CSS class named sendGoods, which be styled in a CSS file to control layout/appearance.-->
                             <div class="sendGoods">
+                                <!-- Thymeleaf syntax (th:action) used in Spring Boot applications.It sets the form's action to
+                                    /addSeckillActivityAction, which is a server-side route that handles the form submission.
+                                    method="post" means the form will send its data via a POST request. -->
                                 <form th:action="@{/addSeckillActivityAction}" method="post">
                                     秒杀活动名称:<input type="text" name="name"><br><br>
                                     商品ID：<input type="text" name="commodityId"><br><br>
@@ -92,6 +96,7 @@
                                     秒杀商品数量：<input type="text" name="seckillNumber"><br><br>
                                     开始时间：<input type="datetime-local" name="startTime" ><br><br>
                                     结束时间：<input type="datetime-local" name="endTime"><br><br>
+                                    <!--Input is the submit button labeled "提交" (Submit). Clicking it sends the form data to the server.-->
                                     <input type="submit" value="提交">
                                 </form>
                             </div>
