@@ -16,9 +16,10 @@ public class RedisDemoTest {
         redisService.setValue("stock 19", 10L);
     }
 
+    // Test if the redis load the activity data from mySql success
     @Test
     public void getStockTest() {
-        String stock =redisService.getValue("stock 19");
-        System.out.println("the value of key: stock 12 is" + stock);
+        String stock =redisService.getValue("stock:28");
+        System.out.println("the value of key: stock 28 is" + stock);
     }
 }

@@ -12,6 +12,7 @@ class RedisServiceTest {
     @Resource
     private RedisService redisService;
 
+    // test the redis function set get deduct
     @Test
     void setValue() {
          redisService.setValue("test:1", 100L);
@@ -31,7 +32,7 @@ class RedisServiceTest {
         System.out.println("result:"+result);
         assertTrue(result);
         String stock = redisService.getValue("test:1");
-        System.out.println("stock:"+stock);
+        System.out.println("test:1"+stock);
         assertEquals("99", stock);
 
     }

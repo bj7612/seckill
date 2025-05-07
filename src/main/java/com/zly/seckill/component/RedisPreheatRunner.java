@@ -39,6 +39,7 @@ public class RedisPreheatRunner  implements ApplicationRunner {
         System.out.println("Fetched activities: " + seckillActivities.size());
         // set all activityId to the key of redis
         for (SeckillActivity seckillActivity : seckillActivities) {
+            System.out.println(seckillActivity.getId());
             redisService.setValue("stock:" + seckillActivity.getId(), (long) seckillActivity.getAvailableStock());
         }
     }
