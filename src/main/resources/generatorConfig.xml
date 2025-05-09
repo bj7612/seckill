@@ -43,11 +43,11 @@
         </javaClientGenerator>
 
         <table schema="" tableName="seckill_order"
-               domainObjectName="SeckillOrder" enableCountByExample="false"
+               domainObjectName="Order" enableCountByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false" selectByExampleQueryId="false"></table>
         <table schema="" tableName="seckill_user"
-               domainObjectName="SeckillUser" enableCountByExample="false"
+               domainObjectName="User" enableCountByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false" selectByExampleQueryId="false"></table>
     </context>
