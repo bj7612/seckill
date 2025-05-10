@@ -161,6 +161,12 @@
       lock_stock = #{lockStock,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <update id="lockStock" parameterType="java.lang.Long">
+    update seckill_activity
+    set available_stock = available_stock - 1,
+      lock_stock = lock_stock + 1
+    where id = #{id,jdbcType=BIGINT} and available_stock > 0
+  </update>
   <select id="querySeckillActivitysByStatus" parameterType="java.lang.Integer"
           resultMap="BaseResultMap">
     select

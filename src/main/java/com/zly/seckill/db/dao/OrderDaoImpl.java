@@ -2,9 +2,10 @@ package com.zly.seckill.db.dao;
 
 import com.zly.seckill.db.mappers.OrderMapper;
 import com.zly.seckill.db.po.Order;
-
+import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 
+@Repository
 public class OrderDaoImpl implements OrderDao{
     @Resource
     private OrderMapper orderMapper;

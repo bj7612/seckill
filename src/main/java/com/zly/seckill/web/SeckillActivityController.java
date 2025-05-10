@@ -2,31 +2,68 @@ package com.zly.seckill.web;
 
 import com.zly.seckill.db.dao.SeckillActivityDao;
 import com.zly.seckill.db.dao.SeckillCommodityDao;
+import com.zly.seckill.db.po.Order;
 import com.zly.seckill.db.po.SeckillActivity;
+import com.zly.seckill.services.SeckillActivityService;
 import com.zly.seckill.db.po.SeckillCommodity;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 public class SeckillActivityController {
-    @Autowired
+    @Resource
     private SeckillActivityDao seckillActivityDao;
-    @Autowired
+    @Resource
     private SeckillCommodityDao seckillCommodityDao;
+    @Resource
+    private SeckillActivityService seckillActivityService;
 
     @RequestMapping("/addSeckillActivity")
     public String addSeckillActivity() {
         // spring boot will map the string add_activity to html file that with same name in templates folder
         return "add_activity";
+    }
+
+    /**
+     * 处理抢购请求
+     * @param userId
+     * @param seckillActivityId
+     * @return
+     */
+    @RequestMapping("/seckill/buy/{userId}/{seckillActivityId}")
+    public ModelAndView seckillCommodity(@PathVariable long userId,
+                                         @PathVariable long seckillActivityId) {
+        boolean stockValidateResult = false;
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            // Confirm whether a flash sale can be carried out
+            stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
+
+            if (stockValidateResult) {
+                Order order = seckillActivityService.createOrder(seckillActivityId, userId);
+                modelAndView.addObject("resultInfo","秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
+                modelAndView.addObject("orderNo", order.getOrderNo());
+            } else {
+                modelAndView.addObject("resultInfo","对不起，商品库存不足");
+            }
+        } catch (Exception e) {
+            log.error("秒杀系统异常{}", e.toString());
+            modelAndView.addObject("resultInfo","秒杀失败");
+        }
+        modelAndView.setViewName("seckill_result");
+        return modelAndView;
     }
 
     @RequestMapping("/addSeckillActivityAction")
