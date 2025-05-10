@@ -35,7 +35,7 @@ public class OrderConsumer implements RocketMQListener<MessageExt> {
         Order order = JSON.parseObject(message, Order.class);
         order.setCreateTime(new Date());
 
-        //2.Deduct inventory
+        //2.Deduct available and Lock inventory
         boolean lockStockResult =
                 seckillActivityDao.lockStock(order.getSeckillActivityId());
         if (lockStockResult) {

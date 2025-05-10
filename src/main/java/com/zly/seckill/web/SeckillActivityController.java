@@ -1,5 +1,6 @@
 package com.zly.seckill.web;
 
+import com.zly.seckill.db.dao.OrderDao;
 import com.zly.seckill.db.dao.SeckillActivityDao;
 import com.zly.seckill.db.dao.SeckillCommodityDao;
 import com.zly.seckill.db.po.Order;
@@ -29,6 +30,8 @@ public class SeckillActivityController {
     private SeckillCommodityDao seckillCommodityDao;
     @Resource
     private SeckillActivityService seckillActivityService;
+    @Resource
+    private OrderDao orderDao;
 
     @RequestMapping("/addSeckillActivity")
     public String addSeckillActivity() {
@@ -120,4 +123,25 @@ public class SeckillActivityController {
         return "seckill_item";
     }
 
+    /**
+     * 订单查询
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("/seckill/orderQuery/{orderNo}")
+    public ModelAndView orderQuery(@PathVariable String orderNo) {
+        log.info("订单查询，订单号：" + orderNo);
+        Order order = orderDao.queryOrder(orderNo);
+        ModelAndView modelAndView = new ModelAndView();
+
+        if (order != null) {
+            modelAndView.setViewName("order");
+            modelAndView.addObject("order", order);
+            SeckillActivity seckillActivity = seckillActivityDao.querySeckillActivityById(order.getSeckillActivityId());
+            modelAndView.addObject("seckillActivity", seckillActivity);
+        } else {
+            modelAndView.setViewName("order_wait");
+        }
+        return modelAndView;
+    }
 }

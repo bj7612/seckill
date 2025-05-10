@@ -1,7 +1,7 @@
 Seckill is a full-stack online shopping website designed to provide a seamless e-commerce experience, especially to handle the high concurrency requests and large flows.
 
 Front-End:
-Built with HTML, JavaScript, CSS, and React, the interactive user interface allows customers to browse products, manage their shopping carts, and place orders. 
+Built with HTML, JavaScript, CSS, and Thymeleaf, the interactive user interface allows customers to browse products, manage their shopping carts, and place orders. 
 
 Back-End:
 Developed using Spring Boot to create a robust RESTful API handling all business logic and security requirements. Features include user management, order and purchase process, and stock management.
