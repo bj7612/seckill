@@ -16,7 +16,7 @@ public class RedisService {
     */
     private final JedisPool jedisPool;
 
-    RedisService(JedisPool jedis) {
+    public RedisService(JedisPool jedis) {
         this.jedisPool = jedis;
     }
 

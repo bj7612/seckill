@@ -33,6 +33,10 @@ public class SeckillActivityController {
     @Resource
     private OrderDao orderDao;
 
+    /**
+     * show the page of activity addition
+     * @return
+     */
     @RequestMapping("/addSeckillActivity")
     public String addSeckillActivity() {
         // spring boot will map the string add_activity to html file that with same name in templates folder
@@ -40,35 +44,19 @@ public class SeckillActivityController {
     }
 
     /**
-     * 处理抢购请求
-     * @param userId
-     * @param seckillActivityId
+     * add an activity
+     * @param name
+     * @param commodityId
+     * @param seckillPrice
+     * @param oldPrice
+     * @param seckillNumber
+     * @param startTime
+     * @param endTime
+     * @param resultMap
      * @return
+     * @throws ParseException
+     * @throws ParseException
      */
-    @RequestMapping("/seckill/buy/{userId}/{seckillActivityId}")
-    public ModelAndView seckillCommodity(@PathVariable long userId,
-                                         @PathVariable long seckillActivityId) {
-        boolean stockValidateResult = false;
-        ModelAndView modelAndView = new ModelAndView();
-        try {
-            // Confirm whether a flash sale can be carried out
-            stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
-
-            if (stockValidateResult) {
-                Order order = seckillActivityService.createOrder(seckillActivityId, userId);
-                modelAndView.addObject("resultInfo","秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
-                modelAndView.addObject("orderNo", order.getOrderNo());
-            } else {
-                modelAndView.addObject("resultInfo","对不起，商品库存不足");
-            }
-        } catch (Exception e) {
-            log.error("秒杀系统异常{}", e.toString());
-            modelAndView.addObject("resultInfo","秒杀失败");
-        }
-        modelAndView.setViewName("seckill_result");
-        return modelAndView;
-    }
-
     @RequestMapping("/addSeckillActivityAction")
     public String addSeckillActivityAction(
             @RequestParam("name") String name,
@@ -99,6 +87,11 @@ public class SeckillActivityController {
         return "add_success";
     }
 
+    /**
+     * List all activities
+     * @param resultMap
+     * @return
+     */
     @RequestMapping("/seckills")
     public String activityList(Map<String, Object> resultMap) {
         List<SeckillActivity> seckillActivities =
@@ -107,12 +100,21 @@ public class SeckillActivityController {
         return "seckill_activity";
     }
 
+    /**
+     * show the detail of an activity
+     * @param resultMap
+     * @param seckillActivityId
+     * @return
+     */
     @RequestMapping("/item/{seckillActivityId}")
     public String itemPage(Map<String, Object> resultMap, @PathVariable long seckillActivityId) {
         SeckillActivity seckillActivity =
                 seckillActivityDao.querySeckillActivityById(seckillActivityId);
         SeckillCommodity seckillCommodity =
                 seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        // resultMap.put(...) → is valid and works like model.addAttribute(...) Spring MVC automatically makes this map available to the view
+        // Spring internally populates the model with the resultMap you’re modifying, and then passes it to the view renderer (like Thymeleaf).
+        // In the Thymeleaf template, ${seckillActivity} refers to the same object you added to the map
         resultMap.put("seckillActivity", seckillActivity);
         resultMap.put("seckillCommodity", seckillCommodity);
         resultMap.put("seckillPrice", seckillActivity.getSeckillPrice());
@@ -124,7 +126,37 @@ public class SeckillActivityController {
     }
 
     /**
-     * 订单查询
+     * Handle rush purchase requests and create an order
+     * @param userId
+     * @param seckillActivityId
+     * @return
+     */
+    @RequestMapping("/seckill/buy/{userId}/{seckillActivityId}")
+    public ModelAndView seckillCommodity(@PathVariable long userId,
+                                         @PathVariable long seckillActivityId) {
+        boolean stockValidateResult = false;
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            // Confirm whether a flash sale can be carried out
+            stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
+
+            if (stockValidateResult) {
+                Order order = seckillActivityService.createOrder(seckillActivityId, userId);
+                modelAndView.addObject("resultInfo","秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
+                modelAndView.addObject("orderNo", order.getOrderNo());
+            } else {
+                modelAndView.addObject("resultInfo","对不起，商品库存不足");
+            }
+        } catch (Exception e) {
+            log.error("秒杀系统异常{}", e.toString());
+            modelAndView.addObject("resultInfo","秒杀失败");
+        }
+        modelAndView.setViewName("seckill_result");
+        return modelAndView;
+    }
+
+    /**
+     * order inquiry
      * @param orderNo
      * @return
      */
@@ -143,5 +175,15 @@ public class SeckillActivityController {
             modelAndView.setViewName("order_wait");
         }
         return modelAndView;
+    }
+
+    /**
+    * payment of an order
+    * @return string
+    */
+    @RequestMapping("/seckill/payOrder/{orderNo}")
+    public String payOrder(@PathVariable String orderNo) throws Exception {
+        seckillActivityService.payOrderProcess(orderNo);
+        return "redirect:/seckill/orderQuery/" + orderNo;
     }
 }

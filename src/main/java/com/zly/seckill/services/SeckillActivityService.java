@@ -1,25 +1,29 @@
 package com.zly.seckill.services;
 
 import com.alibaba.fastjson.JSON;
+import com.zly.seckill.db.dao.OrderDao;
 import com.zly.seckill.db.dao.SeckillActivityDao;
 import com.zly.seckill.db.po.Order;
 import com.zly.seckill.db.po.SeckillActivity;
 import com.zly.seckill.mq.RocketMQService;
 import com.zly.seckill.util.SnowFlake;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
+@Slf4j
 @Service
 public class SeckillActivityService {
     @Resource
     private RedisService redisService;
-
     @Resource
     private SeckillActivityDao seckillActivityDao;
-
     @Resource
     private RocketMQService rocketMQService;
+    @Resource
+    private OrderDao orderDao;
 
     /**
      * datacenterId; 数据中心, machineId; 机器标识
@@ -47,7 +51,6 @@ public class SeckillActivityService {
      * @return
      * @throws Exception
      */
-
     public Order createOrder(long seckillActivityId, long userId) throws Exception {
         SeckillActivity activity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
         Order order = new Order();
@@ -59,5 +62,20 @@ public class SeckillActivityService {
         // set order message throw RocketMq
         rocketMQService.sendMessage("seckill_order", JSON.toJSONString(order));
         return order;
+    }
+
+    /**
+     * deal with the order payment has been processed
+     * @param orderNo
+     */
+    public void payOrderProcess(String orderNo) {
+        log.info("Order has been payed, oderNo: {}", orderNo);
+        Order order = orderDao.queryOrder(orderNo);
+        boolean deductStockResult = seckillActivityDao.deductStock(order.getSeckillActivityId());
+        if (deductStockResult) {
+            order.setPayTime(new Date());
+            order.setOrderStatus(2); // 2: payment finished
+            orderDao.updateOrder(order);
+        }
     }
 }
