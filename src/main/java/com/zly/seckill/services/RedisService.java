@@ -73,4 +73,15 @@ public class RedisService {
             return false;
         }
     }
+
+    /**
+     * Overdue payment Redis Inventory rollback
+     *
+     * @param key
+     */
+    public void revertStock(String key) {
+        Jedis jedisClient = jedisPool.getResource();
+        jedisClient.incr(key);
+        jedisClient.close();
+    }
 }

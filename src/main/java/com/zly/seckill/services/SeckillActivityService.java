@@ -59,8 +59,16 @@ public class SeckillActivityService {
         order.setUserId(userId);
         order.setOrderAmount(activity.getSeckillPrice().longValue());
 
-        // set order message throw RocketMq
+        // set order creation message throw RocketMq
         rocketMQService.sendMessage("seckill_order", JSON.toJSONString(order));
+
+        /*
+         * 3.Send the verification message of the order payment status
+         * RocketMQ supports delayed messages, but does not support second-level accuracy. By default, 18 levels of delayed messages are supported.
+         * This is universal determined through the messageDelayLevel configuration item on the broker side, as follows:
+         * messageDelayLevel=1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
+         */
+        rocketMQService.sendDelayMessage("pay_check", JSON.toJSONString(order), 6);
         return order;
     }
 
