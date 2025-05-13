@@ -1,11 +1,13 @@
 package com.zly.seckill.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Collections;
 
+@Slf4j
 @Service
 public class RedisService {
     /**
@@ -82,6 +84,42 @@ public class RedisService {
     public void revertStock(String key) {
         Jedis jedisClient = jedisPool.getResource();
         jedisClient.incr(key);
+        jedisClient.close();
+    }
+
+    /**
+     * Determine whether the user is on the purchase restriction list
+     * @param seckillActivityId
+     * @param userId
+     * @return
+     */
+    public boolean isInLimitMember(long seckillActivityId, long userId) {
+        Jedis jedisClient = jedisPool.getResource();
+        boolean sismember = jedisClient.sismember("seckillActivity_users:" + seckillActivityId, String.valueOf(userId));
+        jedisClient.close();
+        log.info("userId:{} activityId:{} is on the purchase restriction list {}", userId, seckillActivityId, sismember);
+        return sismember;
+    }
+
+    /**
+     * add user to a specific purchase restriction list
+     * @param seckillActivityId
+     * @param userId
+     */
+    public void addLimitMember(long seckillActivityId, long userId) {
+        Jedis jedisClient = jedisPool.getResource();
+        jedisClient.sadd("seckillActivity_users:" + seckillActivityId, String.valueOf(userId));
+        jedisClient.close();
+    }
+
+    /**
+     * remove user from the purchase restriction list
+     * @param seckillActivityId
+     * @param userId
+     */
+    public void removeLimitMember(Long seckillActivityId, Long userId) {
+        Jedis jedisClient = jedisPool.getResource();
+        jedisClient.srem("seckillActivity_users:" + seckillActivityId, String.valueOf(userId));
         jedisClient.close();
     }
 }

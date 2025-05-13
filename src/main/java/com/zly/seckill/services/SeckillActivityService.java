@@ -79,6 +79,7 @@ public class SeckillActivityService {
     public void payOrderProcess(String orderNo) {
         log.info("Order has been payed, oderNo: {}", orderNo);
         Order order = orderDao.queryOrder(orderNo);
+
         boolean deductStockResult = seckillActivityDao.deductStock(order.getSeckillActivityId());
         if (deductStockResult) {
             order.setPayTime(new Date());

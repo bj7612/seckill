@@ -5,6 +5,7 @@ import com.zly.seckill.db.dao.SeckillActivityDao;
 import com.zly.seckill.db.dao.SeckillCommodityDao;
 import com.zly.seckill.db.po.Order;
 import com.zly.seckill.db.po.SeckillActivity;
+import com.zly.seckill.services.RedisService;
 import com.zly.seckill.services.SeckillActivityService;
 import com.zly.seckill.db.po.SeckillCommodity;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ public class SeckillActivityController {
     private SeckillActivityService seckillActivityService;
     @Resource
     private OrderDao orderDao;
+    @Resource
+    private RedisService redisService;
 
     /**
      * show the page of activity addition
@@ -132,11 +135,16 @@ public class SeckillActivityController {
      * @return
      */
     @RequestMapping("/seckill/buy/{userId}/{seckillActivityId}")
-    public ModelAndView seckillCommodity(@PathVariable long userId,
-                                         @PathVariable long seckillActivityId) {
+    public ModelAndView seckillCommodity(@PathVariable long userId, @PathVariable long seckillActivityId) {
         boolean stockValidateResult = false;
         ModelAndView modelAndView = new ModelAndView();
+
         try {
+            // Check if the user has purchased
+            if (redisService.isInLimitMember(seckillActivityId, userId)){
+                modelAndView.addObject("resultInfo", "Sorry, you are in the list of purchase restriction");
+                modelAndView.setViewName("seckill_result");
+            }
             // Confirm whether a flash sale can be carried out
             stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
 
@@ -144,6 +152,8 @@ public class SeckillActivityController {
                 Order order = seckillActivityService.createOrder(seckillActivityId, userId);
                 modelAndView.addObject("resultInfo","秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
                 modelAndView.addObject("orderNo", order.getOrderNo());
+                // add user on the list of purchase restriction
+                redisService.addLimitMember(seckillActivityId, userId);
             } else {
                 modelAndView.addObject("resultInfo","对不起，商品库存不足");
             }
