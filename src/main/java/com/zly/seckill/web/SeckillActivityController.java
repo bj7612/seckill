@@ -145,9 +145,9 @@ public class SeckillActivityController {
                 modelAndView.addObject("resultInfo", "Sorry, you are in the list of purchase restriction");
                 modelAndView.setViewName("seckill_result");
             }
+
             // Confirm whether a flash sale can be carried out
             stockValidateResult = seckillActivityService.seckillStockValidator(seckillActivityId);
-
             if (stockValidateResult) {
                 Order order = seckillActivityService.createOrder(seckillActivityId, userId);
                 modelAndView.addObject("resultInfo","秒杀成功，订单创建中，订单ID：" + order.getOrderNo());
