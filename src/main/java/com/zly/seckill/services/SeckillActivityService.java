@@ -3,8 +3,10 @@ package com.zly.seckill.services;
 import com.alibaba.fastjson.JSON;
 import com.zly.seckill.db.dao.OrderDao;
 import com.zly.seckill.db.dao.SeckillActivityDao;
+import com.zly.seckill.db.dao.SeckillCommodityDao;
 import com.zly.seckill.db.po.Order;
 import com.zly.seckill.db.po.SeckillActivity;
+import com.zly.seckill.db.po.SeckillCommodity;
 import com.zly.seckill.mq.RocketMQService;
 import com.zly.seckill.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ public class SeckillActivityService {
     private RocketMQService rocketMQService;
     @Resource
     private OrderDao orderDao;
+    @Resource
+    private SeckillCommodityDao seckillCommodityDao;
 
     /**
      * datacenterId; 数据中心, machineId; 机器标识
@@ -101,4 +105,19 @@ public class SeckillActivityService {
         // 3.Send the message of successful order payment
         rocketMQService.sendMessage("pay_done", JSON.toJSONString(order));
     }
+
+    /**
+     * 将秒杀详情相关信息倒入redis
+     * the seckillActivity data usually wil be put in redis before the seckill activity begin
+     * Need to a front management page with button and a related controller to call this method to preheat the seckill activity data
+     * @param seckillActivityId
+     */
+    public void pushSeckillInfoToRedis(long seckillActivityId) {
+        SeckillActivity seckillActivity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
+        redisService.setValue("seckillActivity:" + seckillActivityId, JSON.toJSONString(seckillActivity));
+
+        SeckillCommodity seckillCommodity = seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        redisService.setValue("seckillCommodity:" + seckillActivity.getCommodityId(), JSON.toJSONString(seckillCommodity));
+    }
+
 }

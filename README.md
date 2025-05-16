@@ -14,7 +14,9 @@ Database & Performance:
 
 MyBatis is used for database access (SQL Server) covering authority, customer, product, seckill activity and sales order data.
 
-Redis enable cache preheating data to optimize performance under high-concurrency loads, also using Redis set to limit the amount of buying for users 
+Using Redis to optimize query and purchasing process performance under high-concurrency loadsRedis by enabling  cache preheating of seckill activity, commodity data from DB.
+
+Using Redis to set limit the amount of buying for users 
 
 DB Optimistic Locking and Index Optimization ensure consistency and efficiency.
 

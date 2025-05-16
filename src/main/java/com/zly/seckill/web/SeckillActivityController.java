@@ -1,14 +1,16 @@
 package com.zly.seckill.web;
 
+import com.alibaba.fastjson.JSON;
 import com.zly.seckill.db.dao.OrderDao;
 import com.zly.seckill.db.dao.SeckillActivityDao;
 import com.zly.seckill.db.dao.SeckillCommodityDao;
 import com.zly.seckill.db.po.Order;
 import com.zly.seckill.db.po.SeckillActivity;
+import com.zly.seckill.db.po.SeckillCommodity;
 import com.zly.seckill.services.RedisService;
 import com.zly.seckill.services.SeckillActivityService;
-import com.zly.seckill.db.po.SeckillCommodity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,10 +113,29 @@ public class SeckillActivityController {
      */
     @RequestMapping("/item/{seckillActivityId}")
     public String itemPage(Map<String, Object> resultMap, @PathVariable long seckillActivityId) {
-        SeckillActivity seckillActivity =
-                seckillActivityDao.querySeckillActivityById(seckillActivityId);
-        SeckillCommodity seckillCommodity =
-                seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        SeckillActivity seckillActivity;
+        SeckillCommodity seckillCommodity;
+
+        // retrieve seckillActivity from redis
+        String seckillActivityInfo = redisService.getValue("seckillActivity:" + seckillActivityId);
+        // Check if the seckillActivity data has been preheated in the redis, if not, retrieve data from database.
+        if (StringUtils.isNotEmpty(seckillActivityInfo)) {
+            log.info("redis_seckillActivity 缓存数据:{}", seckillActivityInfo);
+            seckillActivity = JSON.parseObject(seckillActivityInfo, SeckillActivity.class);
+        } else {
+            seckillActivity = seckillActivityDao.querySeckillActivityById(seckillActivityId);
+        }
+
+        // retrieve seckillCommodity from redis
+        String seckillCommodityInfo = redisService.getValue("seckillCommodity:" + seckillActivity.getCommodityId());
+        // Check if the seckillCommodity data has been preheated in the redis, if not, retrieve data from database.
+        if (StringUtils.isNotEmpty(seckillCommodityInfo)){
+            log.info("redis_seckillCommodity 缓存数据:{}", seckillCommodityInfo);
+            seckillCommodity = JSON.parseObject(seckillCommodityInfo, SeckillCommodity.class);
+        } else {
+            seckillCommodity = seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        }
+
         // resultMap.put(...) → is valid and works like model.addAttribute(...) Spring MVC automatically makes this map available to the view
         // Spring internally populates the model with the resultMap you’re modifying, and then passes it to the view renderer (like Thymeleaf).
         // In the Thymeleaf template, ${seckillActivity} refers to the same object you added to the map

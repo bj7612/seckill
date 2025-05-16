@@ -171,7 +171,9 @@ C					<li class="seckill-item" >
 							<div>剩余
 								<b class='owned'>999</b>件</div>
 						</div>
-						<!-- go to the activity detail page, pass the id to the controller "public String itemPage()" that will handle this request-->
+						<!-- Click the button will redirect to the activity detail page(seckill_item.html), pass the activity id to
+							 the link: "/item/{seckillActivityId}", the controller: "public String itemPage()" will handle this request
+							 and return to seckill_item.html to render the activity detail data. -->
 						<a class='sui-btn btn-block btn-buy'  th:href="@{'/item/'+${seckillActivity.id}}" target='_blank'>立即抢购</a>
 					</li>
 				</tr>
