@@ -1,9 +1,10 @@
-Seckill is a full-stack online shopping website designed to provide a seamless e-commerce experience.
+Seckill is a full-stack online shopping website designed to provide a seamless e-commerce experience, especially for the activity of flash sell.
 
-Feature: Handle the high concurrency requests and large flows, oversell, overbuy and overdue payment.
+Feature: Handle the high concurrency requests and large flows, oversell, overbuy and overdue payment during flash sell.
 
 Front-End:
-Built with HTML, JavaScript, CSS, and Thymeleaf, the interactive user interface allows customers to browse products, manage their shopping carts, and place orders. 
+Built with HTML, JavaScript, CSS, and Thymeleaf, the interactive user interface allows customers to browse products, manage their shopping carts, and place orders.
+Using nginx and Thymeleaf template engin to enable page staticiization to handle the query request before the start of flash sell.  
 
 Back-End:
 Developed using Spring Boot to create a robust RESTful API handling all business logic and security requirements. 
