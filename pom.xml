@@ -96,7 +96,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-core</artifactId>
+            <version>1.8.8</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

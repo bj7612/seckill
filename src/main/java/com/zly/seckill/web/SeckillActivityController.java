@@ -1,5 +1,8 @@
 package com.zly.seckill.web;
 
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.zly.seckill.db.dao.OrderDao;
 import com.zly.seckill.db.dao.SeckillActivityDao;
@@ -101,10 +104,24 @@ public class SeckillActivityController {
      */
     @RequestMapping("/seckills")
     public String activityList(Map<String, Object> resultMap) {
+        /*
         List<SeckillActivity> seckillActivities =
                 seckillActivityDao.querySeckillActivitysByStatus(1);
         resultMap.put("seckillActivities", seckillActivities);
         return "seckill_activity";
+        */
+
+        // Add rate limit by Sentinel (can be added to other requests)， the rate limit rule is added in testController.java
+        try (Entry entry = SphU.entry("seckills")) {
+            // 被保护的业务逻辑
+            log.error("查询秒杀活动的列表");
+            List<SeckillActivity> seckillActivities = seckillActivityDao.querySeckillActivitysByStatus(1);
+            resultMap.put("seckillActivities", seckillActivities);
+            return "seckill_activity";
+        } catch (BlockException ex) {
+            log.error("查询秒杀活动的列表被限流 {}", ex.toString());
+            return "wait";
+        }
     }
 
     /**
