@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 @SpringBootTest
 public class RedisDemoTest {
@@ -30,5 +31,18 @@ public class RedisDemoTest {
     @Test
     public void pushSeckillInfoToRedisTest(){
         seckillActivityService.pushSeckillInfoToRedis(19);
+    }
+
+    /**
+     * Test the result of obtaining the lock under high concurrency
+     */
+    @Test
+    public void  testConcurrentAddLock() {
+        for (int i = 0; i < 10; i++) {
+            String requestId = UUID.randomUUID().toString();
+            // Predicted result of print: true false false false false false false false false false
+            // Only the first one can obtain the lock
+            System.out.println(redisService.tryGetDistributedLock("A", requestId,1000));
+        }
     }
 }

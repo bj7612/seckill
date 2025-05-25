@@ -14,7 +14,8 @@ RocketMQ enables decoupled order processing for peak load handling, also using R
 Database & Performance:
 MyBatis is used for database access (SQL Server) covering authority, customer, product, seckill activity and sales order data.
 Using Redis to optimize data query performance on all activity detail, commodity detail and available seckill activity under high-concurrency loadsRedis by enabling  cache preheating of seckill activity, commodity data from DB.
-Using Redis set to enable buying restriction for users 
+Using Redis set to enable buying restriction for users
+Using Redis to enable distributed lock for distributed network. 
 DB Optimistic Locking and Index Optimization ensure consistency and efficiency.
 
 System Stability and High Reliability:
