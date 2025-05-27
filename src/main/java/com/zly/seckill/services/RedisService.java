@@ -147,7 +147,6 @@ public class RedisService {
     public  boolean tryGetDistributedLock(String lockKey, String requestId, int expireTime) {
         Jedis jedisClient = jedisPool.getResource();
 
-
         /*
           nxxx 参数有两个值可选 ：
             NX： not exists, 只有key 不存在时才把 key value set  到 redis
